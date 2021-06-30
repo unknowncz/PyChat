@@ -5,7 +5,6 @@ queueip='127.0.0.1'                     # ip of queue server (client connects to
 serverports=range(40000,40100)          # range of available server ports
 queueport=42069                         # queue port for connections
 threads=[]                              # active threads
-messagelimit=50                         # messages to remember
 
 def connmanager(serverip, newport):
     global commmgr, portmgr
