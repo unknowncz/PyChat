@@ -15,6 +15,8 @@ serverports - int - Range of ports, which will be assigned to the client
 
 queueport - int - Port of queue server, which the client will first connect to
 
+threads - list - leave empty
+
 -----
 ### Client.py ###
 connip - str - IP of queue server
