@@ -1,7 +1,7 @@
 PyChat
 =====
 
-This is a simple ip-based chat app, meant to be used internally.
+This is a simple ip-based chat app, meant to be used internally and / or with friends
 
 Editable variables:
 ------
