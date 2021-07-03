@@ -7,7 +7,7 @@ with open(f'{__file__}/../server.properties') as f:
     lines=f.readlines()
     for i in lines:
         i=','.join(i.split(',')[:-1])
-        option=i.split(':')
+        option=i.split('=')
         if option[1].startswith("'"):parsed=option[1].strip("',")
         elif option[1].startswith("["):parsed=[]
         elif option[1].startswith('range('):

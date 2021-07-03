@@ -1,19 +1,21 @@
-import socket, time, threading, sys, subprocess, msvcrt
-def tryimport():
-    from pyreadline import Readline as readline
-try: import readline
+import socket, time, threading, sys, subprocess
+def tryimport():import getkey
+try: import msvcrt
 except:
-    try:tryimport()
+    try: tryimport()
     except:
-        subprocess.check_call([sys.executable, "-m", "pip", "install", 'pyreadline'])
-        tryimport()
+        subprocess.check_call([sys.executable, "-m", "pip", "install", 'getkey'])
+        try:tryimport()
+        except:
+            print('Module getkey failed to import.')
+            exit()
 
 with open(f'{__file__}/../client.properties') as f:
     options={}
     lines=f.readlines()
     for i in lines:
         i=','.join(i.split(',')[:-1])
-        option=i.split(':')
+        option=i.split('=')
         print(i, option)
         if option[1].startswith("'"):parsed=option[1].strip("',")
         elif option[1].startswith("["):parsed=[]
@@ -36,27 +38,53 @@ def getinput():
     sys.stdout.write('> ')
     sys.stdout.flush()
     input = ''
-    while True:
-        if msvcrt.kbhit():
-            byte_arr = msvcrt.getch()
-            if ord(byte_arr) == 13: # enter_key
+    if msvcrt:
+        while True:
+            if msvcrt.kbhit():
+                byte_arr = msvcrt.getch()
+                if ord(byte_arr) == 13: # enter_key
+                    sys.stdout.write('\n')
+                    sys.stdout.flush()
+                    return input
+                elif ord(byte_arr) >= 32: #space_char
+                    input += "".join(map(chr,byte_arr))
+                    sys.stdout.write(byte_arr.decode())
+                    sys.stdout.flush()
+                elif ord(byte_arr) == 8:
+                    input = input[:-1]
+                    sys.stdout.write(f'{byte_arr.decode()} {byte_arr.decode()}')
+                    sys.stdout.flush()
+            if newmessage:
+                sys.stdout.write('\b \b'*(len(input)+2))
+                print(str(newmessage, 'UTF-8'))
+                newmessage=''
+                sys.stdout.write(f'> {input}')
+                sys.stdout.flush()
+    else:
+        while True:
+            char = getkey.getkey(blocking=False)
+            if char == getkey.keys.ENTER:
                 sys.stdout.write('\n')
                 sys.stdout.flush()
                 return input
-            elif ord(byte_arr) >= 32: #space_char
-                input += "".join(map(chr,byte_arr))
-                sys.stdout.write(byte_arr.decode())
-                sys.stdout.flush()
-            elif ord(byte_arr) == 8:
+            elif char == getkey.keys.BACKSPACE:
                 input = input[:-1]
-                sys.stdout.write(f'{byte_arr.decode()} {byte_arr.decode()}')
+                sys.stdout.write(f'{char} {char}')
                 sys.stdout.flush()
-        if newmessage:
-            sys.stdout.write('\b \b'*(len(input)+2))
-            print(str(newmessage, 'UTF-8'))
-            newmessage=''
-            sys.stdout.write(f'> {input}')
-            sys.stdout.flush()
+                char=''
+            elif char == getkey.keys.SPACE:
+                input += ' '
+                char=''
+            elif char!='':
+                input+=char
+                sys.stdout.write(char)
+                char=''
+            if newmessage:
+                sys.stdout.write('\b \b'*(len(input)+2))
+                print(str(newmessage, 'UTF-8'))
+                newmessage=''
+                sys.stdout.write(f'> {input}')
+                sys.stdout.flush()
 
 def sendmsg(socke:socket.socket, *args):
     while socke:
